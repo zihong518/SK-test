@@ -90,22 +90,22 @@
           <div class="mt-1 text-xl flex justify-left">
             <label class="px-3" v-for="type in typeChoose">
               <input type="radio" v-model="currentType" name="type" id="" :value="type.type" :checked="type.checked " @change="chooseChange($event)" />
-              {{type.value}}
+              [[type.value]]
             </label>
           </div>
         </div>
 
         <!-- 篩選看板 -->
         <div class="mt-5" v-for="list in chooseList.list">
-          <p class="text-xl font-bold border-l-8 pl-2 border-main">{{list.filterTitle}}</p>
+          <p class="text-xl font-bold border-l-8 pl-2 border-main">[[list.filterTitle]]</p>
           <div class="mt-2 text-xl flex flex-col justify-start flex-wrap">
             <label class="px-3" v-for="item in list.filterItems" v-if="list.checkBox">
               <input type="checkbox" v-model="list.model" :data-value="list.filterName==='product'&&item.value" :name="list.filterName" id="" :value="item.value" @change="list.filterName==='product'&&bankSubmit($event);generateChart();" />
-              {{item.name}}
+              [[item.name]]
             </label>
             <label class="px-3" v-for="item in list.filterItems" v-else>
               <input type="radio" v-model="list.model" :name="list.filterName" id="" :value="item.value" @change="generateChart" />
-              {{item.name}}
+              [[item.name]]
             </label>
           </div>
         </div>
@@ -114,14 +114,14 @@
 
     <main class="ml-[17%] mr-6 pb-10 relative" id="main">
       <div class="flex justify-around">
-        <button v-for="tab in tabs" class="bg-red-100 px-10 py-5 rounded-xl relative top-[-15px]" v-bind:class="{'top-[-8px]' : tab === currentTab,'bg-red-300' : tab === currentTab}" @click="changeTab(tab)">{{tab}}</button>
+        <button v-for="tab in tabs" class="bg-red-100 px-10 py-5 rounded-xl relative top-[-15px]" v-bind:class="{'top-[-8px]' : tab === currentTab,'bg-red-300' : tab === currentTab}" @click="changeTab(tab)">[[tab]]</button>
       </div>
       <div>
         <div class="pt-3 flex justify-between" :class="currentTab == '使用字詞比較' ? 'hidden' : 'block'">
           <div class="flex">
             <div v-for="bank in bankButton" class="bankButton bg-blue-100 border-rounded px-4 py-2 mx-2 rounded-xl relative" :data-value="bank.name">
               <button data-type="bankDelete" @click="removeBank($event)" :data-value="bank.name" class="hover:bg-red-500 absolute w-4 h-4 text-sm bg-red-400 rounded-full flex justify-center items-center right-[-10px] top-[-10px] pb-1 text-white">x</button>
-              {{bank.name}}
+              [[bank.name]]
             </div>
           </div>
           <form class="flex" id="bankButtonForm" @submit.prevent>
@@ -133,7 +133,7 @@
           <div class="flex flex-wrap">
             <div v-for="date,index in dateButton" class="mb-2 bg-green-100 border-rounded px-4 py-2 mx-2 rounded-xl relative">
               <button @click="removeDate(index)" class="hover:bg-red-500 absolute w-4 h-4 text-sm bg-red-400 rounded-full flex justify-center items-center right-[-5px] top-[-5px] pb-1 text-white">x</button>
-              {{date.dateStart}} ~ {{date.dateEnd}}
+              [[date.dateStart]] ~ [[date.dateEnd]]
             </div>
           </div>
           <div></div>
@@ -160,23 +160,23 @@
               <div class="flex justify-between">
                 <div class="flex">
                   <p class="text-xl my-auto">關鍵字A：</p>
-                  <p class="text-2xl py-1 px-1 py-2 px-2 rounded-xl" id="keywordA">{{keywordA}}</p>
+                  <p class="text-2xl py-1 px-1 py-2 px-2 rounded-xl" id="keywordA">[[keywordA]]</p>
                 </div>
                 <input type="text" id="keywordInputA" v-if="currentType=='Forum'" class="block focus:ring-indigo-500 border block shadow-md border-gray-300 rounded-md px-4 py-1" placeholder="修改關鍵字A" />
                 <select name="" class="block focus:ring-indigo-500 border block shadow-md border-gray-300 rounded-md px-4 py-1" id="keywordInputA" v-else>
                   <option value="" disabled selected>選擇關鍵字A</option>
-                  <option :value="option.value" v-for="option in controlPanel[1].list[0].filterItems">{{option.name}}</option>
+                  <option :value="option.value" v-for="option in controlPanel[1].list[0].filterItems">[[option.name]]</option>
                 </select>
               </div>
               <div class="flex mt-1 justify-between">
                 <div class="flex">
                   <p class="text-xl my-auto">關鍵字B：</p>
-                  <p class="text-2xl py-1 px-1 py-2 px-2 rounded-xl" id="keywordB">{{keywordB}}</p>
+                  <p class="text-2xl py-1 px-1 py-2 px-2 rounded-xl" id="keywordB">[[keywordB]]</p>
                 </div>
                 <input type="text" id="keywordInputB" v-if="currentType=='Forum'" class="block focus:ring-indigo-500 border block shadow-md border-gray-300 rounded-md px-4 py-1" placeholder="修改關鍵字B" />
                 <select name="" class="block focus:ring-indigo-500 border block shadow-md border-gray-300 rounded-md px-4 py-1" id="keywordInputB" v-else>
                   <option value="" disabled selected>選擇關鍵字B</option>
-                  <option :value="option.value" v-for="option in controlPanel[1].list[0].filterItems">{{option.name}}</option>
+                  <option :value="option.value" v-for="option in controlPanel[1].list[0].filterItems">[[option.name]]</option>
                 </select>
               </div>
             </div>
