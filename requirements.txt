@@ -11,5 +11,5 @@ numpy
 pandas
 pymongo==4.2.0
 requests==2.22.0
-regex==2021.4.4
+regex==2022.8.17
 nltk ==3.7
