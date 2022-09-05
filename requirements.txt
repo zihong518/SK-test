@@ -12,3 +12,4 @@ pandas
 pymongo==4.2.0
 requests==2.22.0
 regex==2021.4.4
+nltk
