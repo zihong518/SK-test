@@ -572,4 +572,7 @@ createApp({
     this.dateRangeCreate()
     this.generateChart()
   },
+  compilerOptions: {
+    delimiters: ['[[', ']]'],
+  },
 }).mount('#app')

@@ -25,6 +25,12 @@ def test1():
     return render_template('index.html')
 
 
+@app.route('/')
+def index():
+    print('Request for index page received')
+    return render_template('index.html')
+
+
 @app.route('/getCloud', methods=['GET'])
 def getCloud():
     type = request.args.get('type')
@@ -1538,6 +1544,5 @@ def getSentence():
 
 
 if __name__ == '__main__':
-    app.jinja_env.variable_start_string = '[['
-    app.jinja_env.variable_end_string = ']]'
+
     app.run()
