@@ -13,7 +13,14 @@ CORS(app)
 def test():
     # return test
     # print('Request for index page received')
-    return render_template('index1html')
+    return render_template('index1.html')
+
+
+@app.route('/1', methods=['GET'])
+def test1():
+    # return test
+    # print('Request for index page received')
+    return render_template('index.html')
 
 
 @app.route('/getCloud', methods=['GET'])
