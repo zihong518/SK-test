@@ -10,7 +10,7 @@ def index():
 
 
 @app.route('/test')
-def index():
+def index1():
     print('Request for index page received')
     return render_template('index.html')
 
