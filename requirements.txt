@@ -3,7 +3,7 @@ azure-common==1.1.28
 azure-core==1.24.2
 beautifulsoup4==4.8.2
 bs4==0.0.1
-Flask==1.1.1
+Flask==2.1.0
 Flask-Compress==1.9.0
 Flask-Cors==3.0.10
 jieba @ git+https://github.com/APCLab/jieba-tw.git@2bd4c0913cdadc865879b21a00c78e28ef1ba2c5
