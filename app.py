@@ -1,14 +1,15 @@
 from datetime import datetime
 from flask import Flask, jsonify, request, render_template, request, redirect, url_for, send_from_directory
-from flask_cors import CORS
+# from flask_cors import CORS
 from nltk import ngrams
 from config import DB_NAME, DB, DICT_COLLECTION, REVIEW_COLLECTION, ARTICLE_COLLECTION
 import pandas as pd
 import random
 app = Flask(__name__)
 
-app.config['JSON_AS_ASCII'] = False
-CORS(app)
+# app.config['JSON_AS_ASCII'] = False
+
+
 @app.route('/')
 def test():
     # return test
@@ -16,7 +17,7 @@ def test():
     return render_template('index1.html')
 
 
-@app.route('/1')
+@app.route('/test')
 def test1():
     # return test
     # print('Request for index page received')
