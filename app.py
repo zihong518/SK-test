@@ -1,8 +1,11 @@
 from datetime import datetime
 from flask import Flask, jsonify, request, render_template, request, redirect, url_for, send_from_directory
 from flask_cors import CORS
-from config import DB_NAME, DB, DICT_COLLECTION, REVIEW_COLLECTION, ARTICLE_COLLECTION
+from nltk import ngrams
 
+from config import DB_NAME, DB, DICT_COLLECTION, REVIEW_COLLECTION, ARTICLE_COLLECTION
+import pandas as pd
+import random
 app = Flask(__name__)
 
 app.config['JSON_AS_ASCII'] = False

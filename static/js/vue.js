@@ -555,12 +555,12 @@ createApp({
       })[0]
     },
   },
-  mounted() {
+  async mounted() {
     const choose = this.typeChoose.filter((item) => {
       return item.checked == true
       // return item.checked
     })[0].type
-    getDateRange(choose)
+    await getDateRange(choose)
       .then((res) => {
         return res.data
       })
