@@ -1538,4 +1538,4 @@ def getSentence():
 if __name__ == '__main__':
     app.jinja_env.variable_start_string = '[['
     app.jinja_env.variable_end_string = ']]'
-    app.run(debug=True)
+    app.run()
