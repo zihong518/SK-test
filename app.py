@@ -11,9 +11,9 @@ app.config['JSON_AS_ASCII'] = False
 CORS(app)
 @app.route('/', methods=['GET'])
 def test():
-    return 'test'
+    # return test
     # print('Request for index page received')
-    # return render_template('index.html')
+    return render_template('index1html')
 
 
 @app.route('/getCloud', methods=['GET'])
