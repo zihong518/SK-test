@@ -172,15 +172,16 @@ createApp({
         },
       ],
       tabs: ['提及熱度比較', '文字雲比較', '使用字詞比較', '情緒分析'],
+      currentType: 'Forum',
       currentTab: '提及熱度比較',
       keywordA: 'OU',
       keywordB: '寰宇',
       minDate: '',
       maxDate: '',
-      currentType: 'Forum',
     }
   },
   methods: {
+    // 改變type的話
     chooseChange() {
       this.typeChoose[0].checked = !this.typeChoose[0].checked
       this.typeChoose[1].checked = !this.typeChoose[1].checked
@@ -195,7 +196,7 @@ createApp({
           return item.value === choose
         })[0]
       }
-
+      // 要用非同步的方式做才能成功更新上面綁定的data以及生產圖表
       setTimeout(() => {
         if (this.currentType === 'App') {
           this.temp = this.bankButton
@@ -216,6 +217,7 @@ createApp({
       //   this.getSentChart()
       // }, 30)
     },
+    // 生產每一張圖表
     generateChart() {
       this.getWordCloud()
 
@@ -225,17 +227,20 @@ createApp({
 
       this.getSentChart()
     },
+    // 更改選取的功能
     changeTab(tab) {
       this.currentTab = tab
     },
+    // 文字雲
     getWordCloud() {
+      // 移除已經有的文字雲
       let element = document.getElementById('canvas')
       if (element) {
         while (element.firstChild) {
           element.removeChild(element.firstChild)
         }
       }
-
+      // 參數抓取
       const type = document.querySelector('input[name=type]:checked').value
       const product = document.querySelector('input[name=product]:checked').value
       const source = document.querySelectorAll('input[name=source]:checked')
@@ -244,8 +249,7 @@ createApp({
       if (this.currentType === 'Forum') {
         content = document.querySelector('input[name=content]:checked').value
       }
-      // console.log(type,product,sourceList,content);
-
+      // 不同銀行+不同時間生產出相對的文字雲
       for (let i = 0; i < this.dateButton.length; i++) {
         for (let j = 0; j < this.bankButton.length; j++) {
           let data = {
@@ -265,14 +269,16 @@ createApp({
         }
       }
     },
+    // 折線圖
     getLineChart() {
+      // 移除元素
       let element = document.getElementById('lineChart')
       if (element) {
         while (element.firstChild) {
           element.removeChild(element.firstChild)
         }
       }
-
+      //獲取目前的參數
       const type = document.querySelector('input[name=type]:checked').value
       const product = document.querySelector('input[name=product]:checked').value
       const source = document.querySelectorAll('input[name=source]:checked')
@@ -281,7 +287,6 @@ createApp({
       if (this.currentType === 'Forum') {
         content = document.querySelector('input[name=content]:checked').value
       }
-      // console.log(type,product,sourceList,content);
       const bank = this.bankButton.map((x) => x.name).toString()
       let filter = {
         type: type,
@@ -292,19 +297,20 @@ createApp({
       }
 
       document.getElementById('lineChart').innerHTML = loading
+      // 去request data 回來
       getWordCount(filter)
         .then((res) => {
-          this.lineChartData = res.data
+          // 移除現有圖表
           document.getElementById('lineChart').removeChild(document.getElementById('lineChart').firstChild)
           lineChart(res.data, filter)
         })
         .catch((err) => {
           console.log(err)
         })
-
-      // let rawData = getData()
     },
+    // 比例圖
     getWordProportion() {
+      // 移除現有元素
       let element = document.getElementById('proportionChart')
       if (element) {
         while (element.firstChild) {
@@ -312,6 +318,7 @@ createApp({
         }
       }
       element.innerHTML = loading
+      // 參數
       const type = document.querySelector('input[name=type]:checked').value
       const product = document.querySelector('input[name=product]:checked').value
       const source = document.querySelectorAll('input[name=source]:checked')
@@ -330,17 +337,20 @@ createApp({
         keywordA: keywordA,
         keywordB: keywordB,
       }
+      // get data
       getWordProportion(filter)
         .then((res) => {
+          // remove element
           element.removeChild(element.firstChild)
-
           proportionChart(res.data, filter)
         })
         .catch((err) => {
           console.log(err)
         })
     },
+    // 情緒分析
     getSentChart() {
+      // 移除元素
       let element = document.getElementById('sentChart')
       if (element) {
         while (element.firstChild) {
@@ -349,7 +359,7 @@ createApp({
       }
 
       element.innerHTML = loading
-
+      // 參數
       const type = document.querySelector('input[name=type]:checked').value
       const product = document.querySelector('input[name=product]:checked').value
       const source = document.querySelectorAll('input[name=source]:checked')
@@ -358,7 +368,7 @@ createApp({
       if (this.currentType === 'Forum') {
         content = document.querySelector('input[name=content]:checked').value
       }
-
+      // 根據每個關鍵字生產圖表
       this.bankButton.forEach((bank) => {
         let filter = {
           type: type,
@@ -379,10 +389,13 @@ createApp({
       })
       document.getElementById('sentChart').removeChild(document.getElementById('sentChart').firstChild)
     },
+    // 送出輸入關鍵字
     bankSubmit(event) {
       let inputData = ''
+      // 論壇的話只有上面的輸入框會改變
       if (this.currentType == 'Forum') {
         inputData = document.getElementById('bankButtonInput').value
+        // push進bankButton的list內
         if (inputData) {
           this.bankButton.push({
             name: inputData,
@@ -405,6 +418,7 @@ createApp({
           minDate: this.minDate,
           maxDate: this.maxDate,
         }
+        // request sent chart
         getSent(filter)
           .then((res) => {
             sentChart(res.data, filter)
@@ -415,15 +429,18 @@ createApp({
         this.getWordCloud()
         this.getLineChart()
       } else if (event.target.checked) {
+        // 當選擇App，左邊的控制板銀行打勾的話
         inputData = event.target.value
         this.bankButton.push({
           name: inputData,
         })
       } else {
+        // 當選擇App，左邊的控制板銀行取消打勾的話
         inputData = event.target.value
         this.removeBank(event)
       }
     },
+    // 日期送出
     dateSubmit() {
       const dateStartValue = document.getElementById('dateStart').innerText
       const dateEndValue = document.getElementById('dateEnd').innerText
@@ -437,6 +454,7 @@ createApp({
         this.getWordCloud()
       }
     },
+    // 移除關鍵字
     removeBank(element) {
       this.bankButton = this.bankButton.filter((x) => {
         return x.name != element.target.dataset.value
@@ -444,10 +462,9 @@ createApp({
       if (this.currentTab == '文字雲比較') {
         this.getWordCloud()
       }
-
+      // 當App的時候，按了關鍵字按鈕的叉叉會移除控制板的勾勾
       if (this.currentType === 'App') {
         const productCheckbox = document.querySelectorAll('input[name=product]:checked')
-        console.log(productCheckbox)
         productCheckbox.forEach((x) => {
           x.checked = false
           if (x.value === element.target.dataset.value) {
@@ -459,10 +476,12 @@ createApp({
       document.getElementById('sent' + element.target.dataset.value).remove()
       document.getElementById('title' + element.target.dataset.value).remove()
     },
+    // 移除日期
     removeDate(index) {
       this.dateButton.splice(index, 1)
       this.getWordCloud()
     },
+    // 文字雲的日期建立
     dateRangeCreate() {
       const minDate = this.minDate
       const maxDate = this.maxDate
@@ -481,6 +500,7 @@ createApp({
       d3.select('#dateRange').append('svg').attr('id', 'dateRangeSvg').attr('preserveAspectRatio', 'xMinYMin meet').attr('viewBox', '0 0 950 600').classed('svg-content', true).append('g').attr('transform', 'translate(80,30)').call(sliderRange)
       d3.selectAll('#dateRangeSvg  text').attr('font-size', '1.5em')
     },
+    // 比例圖送出關鍵字
     submitKeyword() {
       if (document.getElementById('keywordInputA').value) {
         this.keywordA = document.getElementById('keywordInputA').value
@@ -490,11 +510,13 @@ createApp({
       }
       this.getWordProportion()
     },
+    // 關掉跳出來的Modal
     closeModal() {
       document.getElementById('modal').classList.add('hidden')
       document.getElementById('app').classList.remove('overflow-y-hidden')
       document.getElementById('proportionModal').classList.add('hidden')
     },
+    // 隨機五筆的按鈕
     randomPick() {
       const type = document.querySelector('input[name=type]:checked').value
       const product = document.querySelector('input[name=product]:checked').value
@@ -518,6 +540,7 @@ createApp({
       }
       sentence(input)
     },
+    // 比例圖隨機五筆的按鈕
     propRandomPick(key) {
       const type = document.querySelector('input[name=type]:checked').value
       const product = document.querySelector('input[name=product]:checked').value
@@ -542,24 +565,25 @@ createApp({
       keywordSentence(input, key)
     },
   },
+  // 一開始篩選的運算
   computed: {
     chooseList: function choose() {
+      // 選擇目前的type
       const choose = this.typeChoose.filter((item) => {
         return item.checked == true
-        // return item.checked
       })[0].value
-
+      // 回傳現在要渲染出來的內容
       return this.controlPanel.filter((item) => {
-        // console.log(item.value)
         return item.value === choose
       })[0]
     },
   },
   async mounted() {
+    // 選擇目前的類型
     const choose = this.typeChoose.filter((item) => {
       return item.checked == true
-      // return item.checked
     })[0].type
+    // getDate
     await getDateRange(choose)
       .then((res) => {
         return res.data
@@ -568,8 +592,9 @@ createApp({
         this.minDate = new Date(data.minDate)
         this.maxDate = new Date(data.maxDate)
       })
-
+    // 生產日期
     this.dateRangeCreate()
+    // 生產圖表
     this.generateChart()
   },
   compilerOptions: {

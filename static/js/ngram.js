@@ -14,6 +14,7 @@ const sentColor = [
   },
 ]
 export function Ngram(filter) {
+  // 去request Ngram 後增加進去element內
   getNgram(filter, 2).then((res) => {
     document.getElementById('bigram-loading').firstChild.remove()
     const data = res.data.slice(0, 10).map((x) => {
@@ -65,6 +66,7 @@ export function Ngram(filter) {
   })
 }
 export function sentence(filter) {
+  // 去request 提及字句後加進去sentence-list
   getSentence(filter)
     .then((res) => {
       const data = res.data
@@ -98,6 +100,7 @@ export function sentence(filter) {
       sentenceList.innerHTML = content
     })
     .then(() => {
+      // 將提及到的字變成紅色的
       const sentenceLi = document.querySelectorAll('[data-type=sentence]')
       sentenceLi.forEach((x) => {
         x.innerHTML = x.innerHTML.replaceAll(filter.keyword.toLowerCase(), `<span class="text-main font-bold text-l">${filter.keyword}</span>`)

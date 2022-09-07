@@ -17,15 +17,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.core.min.js" integrity="sha512-ChZ5l881NIBx9sxdDy5gEynup6bC4+E8GPWBylkyRYwwK1fHAlGa7+D9m1o4OEjqYA+nygyMR48vNh5kmZWPLg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
     <style>
+      /* 設定字體 */
       body {
         font-family: 'Noto Sans TC', sans-serif;
       }
+      /* svg不跑版 */
       .svg-content {
         display: inline-block;
         position: absolute;
         top: 0;
         left: 0;
       }
+      /* slider的class */
       .dateFilter {
         margin: 0 auto;
         display: inline-block;
@@ -35,6 +38,7 @@
         vertical-align: top;
         overflow: hidden;
       }
+      /* slider的class */
       #dateRange {
         display: inline-block;
         position: relative;
@@ -43,6 +47,7 @@
         vertical-align: top;
         overflow: hidden;
       }
+      /* slider的class */
       #lineDateFilter {
         display: inline-block;
         position: relative;
@@ -51,6 +56,7 @@
         vertical-align: top;
         overflow: hidden;
       }
+      /* slider的class */
       #proportionDateFilter {
         display: inline-block;
         position: relative;
@@ -59,6 +65,7 @@
         vertical-align: top;
         overflow: hidden;
       }
+      /* slider的class */
       #sentDateFilter {
         display: inline-block;
         position: relative;
@@ -69,6 +76,7 @@
       }
     </style>
     <script>
+      // 讓tailwind多一個顏色main
       tailwind.config = {
         theme: {
           extend: {
@@ -85,6 +93,7 @@
       <img src="../static/img/SK_logo.png" alt="" class="px-10 py-6" />
       <h1 class="text-2xl text-center font-bold">新光文字分析平台</h1>
       <div class="mx-5" v-for="">
+        <!-- 資料來源 -->
         <div class="mt-5">
           <p class="text-xl font-bold border-l-8 pl-2 border-main">資料來源</p>
           <div class="mt-1 text-xl flex justify-left">
@@ -95,7 +104,7 @@
           </div>
         </div>
 
-        <!-- 篩選看板 -->
+        <!-- 篩選看板 對上vue裡面的data-->
         <div class="mt-5" v-for="list in chooseList.list">
           <p class="text-xl font-bold border-l-8 pl-2 border-main">[[list.filterTitle]]</p>
           <div class="mt-2 text-xl flex flex-col justify-start flex-wrap">
@@ -113,22 +122,27 @@
     </aside>
 
     <main class="ml-[17%] mr-6 pb-10 relative" id="main">
+      <!-- 功能的選擇 -->
       <div class="flex justify-around">
         <button v-for="tab in tabs" class="bg-red-100 px-10 py-5 rounded-xl relative top-[-15px]" v-bind:class="{'top-[-8px]' : tab === currentTab,'bg-red-300' : tab === currentTab}" @click="changeTab(tab)">[[tab]]</button>
       </div>
       <div>
+        <!-- 如果是使用字詞比較的話就不會顯示這塊 -->
         <div class="pt-3 flex justify-between" :class="currentTab == '使用字詞比較' ? 'hidden' : 'block'">
           <div class="flex">
+            <!-- 關鍵字的按鈕 -->
             <div v-for="bank in bankButton" class="bankButton bg-blue-100 border-rounded px-4 py-2 mx-2 rounded-xl relative" :data-value="bank.name">
               <button data-type="bankDelete" @click="removeBank($event)" :data-value="bank.name" class="hover:bg-red-500 absolute w-4 h-4 text-sm bg-red-400 rounded-full flex justify-center items-center right-[-10px] top-[-10px] pb-1 text-white">x</button>
               [[bank.name]]
             </div>
           </div>
+          <!-- 送出關鍵字 -->
           <form class="flex" id="bankButtonForm" @submit.prevent>
             <input type="text" v-if="currentType=='Forum'" id="bankButtonInput" class="focus:ring-indigo-500 border block shadow-md border-gray-300 rounded-md px-4" placeholder="請輸入比較文字" />
             <button type="submit" v-if="currentType=='Forum'" id="bankSubmitButton" @keyup.enter="bankSubmit" @click="bankSubmit" class="w-100 block border-rounded border border-blue-400 px-4 py-2 mx-2 rounded-xl whitespace-nowrap bg-blue-300">送出</button>
           </form>
         </div>
+        <!-- 文字雲比較才會顯示的日期篩選 -->
         <div class="mt-6 flex justify-between" :class="currentTab == '文字雲比較' ? 'block' : 'hidden'">
           <div class="flex flex-wrap">
             <div v-for="date,index in dateButton" class="mb-2 bg-green-100 border-rounded px-4 py-2 mx-2 rounded-xl relative">
@@ -136,7 +150,7 @@
               [[date.dateStart]] ~ [[date.dateEnd]]
             </div>
           </div>
-          <div></div>
+          <!--  送出日期 -->
           <form class="flex h-min w-1/2" @submit.prevent>
             <div class="flex flex-col w-full">
               <div class="flex justify-around">
@@ -149,11 +163,13 @@
                   <span id="dateEnd"></span>
                 </p>
               </div>
+              <!-- 文字雲日期的svg -->
               <div id="dateRange"></div>
             </div>
             <button type="submit" id="dateSubmitButton" @keyup.enter="dateSubmit" @click="dateSubmit" class="w-100 block border-rounded border border-green-400 px-4 py-2 mx-2 rounded-xl whitespace-nowrap bg-green-300">送出</button>
           </form>
         </div>
+        <!-- 使用字詞比較才會出現的關鍵字 -->
         <div class="mt-3 mx-3 flex flex-col" :class="currentTab == '使用字詞比較' ? 'block' : 'hidden'">
           <div class="flex">
             <div class="flex flex-col w-full">
@@ -162,7 +178,9 @@
                   <p class="text-xl my-auto">關鍵字A：</p>
                   <p class="text-2xl py-1 px-1 py-2 px-2 rounded-xl" id="keywordA">[[keywordA]]</p>
                 </div>
+                <!-- v-if是論壇的話才會是input -->
                 <input type="text" id="keywordInputA" v-if="currentType=='Forum'" class="block focus:ring-indigo-500 border block shadow-md border-gray-300 rounded-md px-4 py-1" placeholder="修改關鍵字A" />
+                <!-- else是App的部分是select -->
                 <select name="" class="block focus:ring-indigo-500 border block shadow-md border-gray-300 rounded-md px-4 py-1" id="keywordInputA" v-else>
                   <option value="" disabled selected>選擇關鍵字A</option>
                   <option :value="option.value" v-for="option in controlPanel[1].list[0].filterItems">[[option.name]]</option>
@@ -173,19 +191,24 @@
                   <p class="text-xl my-auto">關鍵字B：</p>
                   <p class="text-2xl py-1 px-1 py-2 px-2 rounded-xl" id="keywordB">[[keywordB]]</p>
                 </div>
+                <!-- v-if是論壇的話才會是input -->
                 <input type="text" id="keywordInputB" v-if="currentType=='Forum'" class="block focus:ring-indigo-500 border block shadow-md border-gray-300 rounded-md px-4 py-1" placeholder="修改關鍵字B" />
+                <!-- else是App的部分是select -->
                 <select name="" class="block focus:ring-indigo-500 border block shadow-md border-gray-300 rounded-md px-4 py-1" id="keywordInputB" v-else>
                   <option value="" disabled selected>選擇關鍵字B</option>
                   <option :value="option.value" v-for="option in controlPanel[1].list[0].filterItems">[[option.name]]</option>
                 </select>
               </div>
             </div>
+            <!-- 送出關鍵字的按鈕 -->
             <div class="flex">
               <button type="submit" @click="submitKeyword" id="keywordSubmit" class="w-100 block border-rounded border border-blue-400 px-4 py-2 mx-2 rounded-xl whitespace-nowrap bg-blue-300">送出</button>
             </div>
           </div>
+          <!-- 比例圖的日期svg -->
           <div id="proportionDateFilter"></div>
         </div>
+        <!-- 提及熱度比較的日期filter -->
         <div :class="currentTab == '提及熱度比較' ? 'block' : 'hidden'">
           <div id="lineDateFilter"></div>
         </div>
@@ -196,18 +219,23 @@
         <div id="sentChart" class="mt-4 flex flex-col" :class="currentTab == '情緒分析' ? 'block' : 'hidden'"></div>
       </div>
     </main>
+    <!-- 詳細資料的彈跳出來的modal -->
     <div class="relative z-10 hidden transition-all duration-300 opacity-0" id="modal" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <!-- 灰底 -->
       <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+      <!-- modal -->
       <div class="fixed z-10 inset-0 overflow-y-auto">
         <div class="flex items-center justify-center min-h-full p-4 text-center">
           <div class="relative bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-3/4 pb-10 \">
             <div class="bg-white">
               <div class="text-center">
+                <!-- XX中的關鍵字 -->
                 <h3 class="text-3xl mt-5 leading-6 font-medium text-gray-900 py-4" id="modal-title">
                   <span id="modal-topic" class="text-main"></span>
                   中的
                   <span id="modal-keyword" class="text-main"></span>
                 </h3>
+                <!-- 時間區間 -->
                 <p class="text-sm">
                   <span id="modal-dateStart"></span>
                   ~
@@ -215,13 +243,15 @@
                 </p>
                 <p class="text-2xl my-6 text-center font-bold">
                   提及內容
-
                   <span class="text-sm text-[#d20000] mx-1">正面</span>
                   <span class="text-sm text-[#515456] mx-1">中性</span>
                   <span class="text-sm text-[#0089d2] mx-1">負面</span>
                 </p>
+                <!-- 提及內容列表 -->
                 <ul id="sentence-list" class="list-disc mx-20 text-left"></ul>
+                <!-- 隨機五項 -->
                 <button id="sentence-button" class="px-4 py-2 bg-rose-200 rounded-lg hover:bg-rose-300 duration-300 transition-all" @click="randomPick">隨機五筆</button>
+                <!-- BiGram -->
                 <div>
                   <p class="text-2xl my-6 text-center font-bold">BiGram</p>
                   <table class="table-fixed w-3/4 mx-auto">
@@ -237,6 +267,7 @@
                   </table>
                   <div id="bigram-loading"></div>
                 </div>
+                <!-- TriGram -->
                 <div>
                   <p class="text-2xl my-6 text-center font-bold">TriGram</p>
                   <table class="table-fixed w-3/4 mx-auto">
@@ -255,6 +286,7 @@
                 </div>
               </div>
             </div>
+            <!-- 關掉的按鈕 -->
             <div class="absolute top-0 right-0">
               <button type="button" id="closeModal" class="text-red-400 bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" @click="closeModal">
                 <svg aria-hidden="true" class="w-8 h-8" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
@@ -266,6 +298,7 @@
       </div>
     </div>
 
+    <!-- ProportionChart的Modal -->
     <div class="relative z-10 hidden opacity-0 transition-all duration-300" id="proportionModal" aria-labelledby="modal-title" role="dialog" aria-modal="true">
       <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
       <div class="fixed z-10 inset-0 overflow-y-auto">
@@ -273,12 +306,14 @@
           <div class="relative bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-10/12 pb-10 \">
             <div class="bg-white">
               <div class="text-center flex">
-                <div>
+                <div class="keyword-A">
+                  <!-- 關鍵字標題A -->
                   <h3 class="text-3xl my-5 leading-6 font-medium text-gray-900 py-4" id="modal-title">
                     <span id="modal-topic-A" class="text-main"></span>
                     中的
                     <span id="modal-keyword-A" class="text-main"></span>
                   </h3>
+                  <!-- 時間A -->
                   <p class="text-sm">
                     <span id="modal-dateStart-A"></span>
                     ~
@@ -290,10 +325,11 @@
                     <span class="text-sm text-[#515456] mx-1">中性</span>
                     <span class="text-sm text-[#0089d2] mx-1">負面</span>
                   </p>
-
+                  <!-- 提及內容列表A -->
                   <ul id="sentence-list-A" class="list-disc mx-20 text-left"></ul>
+                  <!-- 隨機按鈕A -->
                   <button id="sentence-button-A" class="px-4 py-2 bg-rose-200 rounded-lg hover:bg-rose-300 duration-300 transition-all" @click="propRandomPick('A')">隨機五筆</button>
-
+                  <!-- BiGram A -->
                   <div>
                     <p class="text-2xl text-center font-bold">BiGram</p>
                     <table class="table-fixed w-3/4 mx-auto">
@@ -309,6 +345,7 @@
                     </table>
                     <div id="bigram-loading-A"></div>
                   </div>
+                  <!-- TriGram A -->
                   <div>
                     <p class="text-2xl text-center font-bold">TriGram</p>
                     <table class="table-fixed w-3/4 mx-auto">
@@ -326,7 +363,7 @@
                     <div id="trigram-loading-A"></div>
                   </div>
                 </div>
-                <div>
+                <div class="keyword-B">
                   <h3 class="text-3xl my-5 leading-6 font-medium text-gray-900 py-4" id="modal-title">
                     <span id="modal-topic-B" class="text-main"></span>
                     中的

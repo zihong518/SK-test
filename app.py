@@ -8,12 +8,12 @@ import random
 app = Flask(__name__)
 
 
+# render 出畫面
 @app.route('/')
 def index():
-    print('Request for index page received')
     return render_template('index.html')
 
-
+# 文字雲資料
 @app.route('/getCloud', methods=['GET'])
 def getCloud():
     type = request.args.get('type')
@@ -40,8 +40,8 @@ def getCloud():
             {
                 "$project": {
                     "_id": 0,
-                    "sentence": True,
-                    "word": True,
+                    "sentence": 1,
+                    "word": 1,
                     "date": {
                         "$dateFromString": {
                             "dateString": '$artDate'
@@ -86,8 +86,8 @@ def getCloud():
             },
             {
                 "$project": {
-                    "artTitle": True,
-                    "word": True,
+                    "artTitle": 1,
+                    "word": 1,
                     "date": {
                         "$dateFromString": {
                             "dateString": '$artDate'
@@ -214,7 +214,7 @@ def getCloud():
 
     return jsonify(result)
 
-
+# 詞頻的計算
 @app.route('/getCount', methods=['GET'])
 def getCount():
     type = request.args.get('type')
@@ -415,7 +415,7 @@ def getCount():
         result = result.reset_index().to_dict('records')
     return jsonify(result)
 
-
+# 日期區間
 @app.route('/getDateRange', methods=['GET'])
 def getDateRange():
     type = request.args.get('type')
@@ -531,7 +531,7 @@ def getDateRange():
     }
     return jsonify(result)
 
-
+# 兩個關鍵字的詞頻 
 @app.route('/getProportion', methods=['GET'])
 def getProportion():
     type = request.args.get('type')
@@ -752,7 +752,7 @@ def getProportion():
 
     return jsonify(result)
 
-
+# 情緒的次數計算
 @app.route('/getSent')
 def getSent():
     type = request.args.get('type')
@@ -928,7 +928,7 @@ def getSent():
         result = result.reset_index().to_dict('records')
     return jsonify(result)
 
-
+# 情緒的字詞總計算
 @app.route('/getSentWord')
 def getSentWord():
     type = request.args.get('type')
@@ -1110,14 +1110,14 @@ def getSentWord():
                 element['wordCount'] += item['wordCount']
     return jsonify(result)
 
-
+# 正負面字典
 @app.route('/getSentDict')
 def getSentDict():
     result = list(DB[DICT_COLLECTION].find({"$or": [{"type": "pos_dict"}, {
                   "type": "neg_dict"}]}, {"list": 1, "type": 1, "_id": 0}))
     return jsonify(result)
 
-
+# Ngram的計算
 @app.route('/getNgram')
 def getNgram():
     type = request.args.get('type')
@@ -1328,7 +1328,7 @@ def getNgram():
 
     return jsonify(result)
 
-
+# 隨機得到五筆句子
 @app.route('/getSentence')
 def getSentence():
     type = request.args.get('type')
@@ -1527,4 +1527,4 @@ def getSentence():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

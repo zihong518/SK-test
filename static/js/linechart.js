@@ -1,6 +1,7 @@
 import { getWordCount, getDateRange } from './api.js'
 
 function lineChart(data, filter) {
+  // 輸入hex調整顏色的透明度
   function hexToRgbA(hex, opacity = 0.5) {
     let c
     if (/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)) {
@@ -20,7 +21,7 @@ function lineChart(data, filter) {
   let EndTime = 0
   // set the dimensions and margins of the graph
   const margin = { top: 10, right: 30, bottom: 30, left: 60 }
-  // append the svg object to the body of the page
+  // 增加svg
   const svg = d3
     .select('#lineChart')
     .append('svg')
@@ -33,41 +34,14 @@ function lineChart(data, filter) {
   function sortByDateAscending(a, b) {
     return a.date - b.date
   }
+  // 轉換格式
   data.forEach((x) => {
     x.date = new Date(x.date)
   })
+  // sort data
   data = data.sort(sortByDateAscending)
-  const dateRange = d3.extent(data, function (d) {
-    return new Date(d.date)
-  })
 
-  // 沒有時間的補0
-  const dateList = d3.timeDay.range(dateRange[0], dateRange[1])
-  dateList.map((x) => {
-    return x.setTime(x.getTime() + 8 * 60 * 60 * 1000)
-  })
-
-  function fillZeroDate(data) {
-    // let bankList = []
-    // data.forEach((x) => {
-    //   if (!(bankList.indexOf(x.word) + 1)) {
-    //     bankList.push(x.word)
-    //   }
-    // })
-    // let result = []
-    // bankList.forEach((bank) => {
-    //   const bankData = data.filter((x) => {
-    //     return x.word === bank
-    //   })
-    //   const testDate = dateList.map((date) => {
-    //     return _.find(bankData, { date: date }) || { word: bank, date: date, wordCount: 0 }
-    //   })
-    //   result = result.concat(testDate)
-    // })
-    return data
-  }
-
-  // Add X axis --> it is a date format
+  // X軸
   const x = d3.scaleTime().range([0, canvasWidth])
 
   svg
@@ -79,41 +53,42 @@ function lineChart(data, filter) {
     .style('text-anchor', 'end')
     .attr('transform', 'rotate(-65)')
 
-  // Add Y axis
+  // Y軸
   const y = d3.scaleLinear().range([canvasHeight, 0])
   svg.append('g').attr('class', 'Yaxis').call(d3.axisLeft(y))
 
-  // color palette
+  //顏色設定
   const color = d3.scaleOrdinal(d3.schemeCategory10)
   // Draw the line
   update(startTime, EndTime, data)
 
-  // 新增銀行加入圖表
+  // 新增銀行加入列表
   const bankButtonForm = document.getElementById('bankButtonForm')
 
   bankButtonForm.addEventListener('submit', () => {
     const inputData = document.getElementById('bankButtonInput').value
     let input = filter
     input.bank = inputData
+    // request data 後新增進去圖表
     getWordCount(input).then((res) => {
       let newData = res.data
       newData.forEach((x) => {
         x.date = new Date(x.date)
       })
-
       newData = newData.sort(sortByDateAscending)
 
       allData = allData.concat(newData)
+
       update(startTime, EndTime, allData)
-      // const newDateMap = d3.group(newData, (d) => d.word)
     })
+    // 如果刪除按鈕被按
     d3.selectAll('button[data-type="bankDelete"]').on('click', function (x) {
       const deleteValue = x.target.dataset.value
       allData = allData.filter((x) => x.word !== deleteValue)
       update(startTime, EndTime, allData)
     })
   })
-
+  //
   d3.selectAll('button[data-type="bankDelete"]').on('click', function (x) {
     const deleteValue = x.target.dataset.value
     allData = allData.filter((x) => x.word !== deleteValue)
@@ -123,6 +98,7 @@ function lineChart(data, filter) {
   // 更新圖表
   function update(startTime, EndTime, inputData) {
     let filterData
+    // 第一次畫出來 starttime = 0
     if (startTime == 0) {
       filterData = inputData
     } else {
@@ -156,7 +132,6 @@ function lineChart(data, filter) {
     svg.selectAll('.Yaxis').transition().duration(500).call(d3.axisLeft(y))
 
     // 補0
-    filterData = fillZeroDate(filterData)
     let bank = []
     document.querySelectorAll('.bankButton').forEach((x) => {
       bank.push(x.dataset.value)
@@ -193,14 +168,13 @@ function lineChart(data, filter) {
       .attr('data-value', (d) => {
         return d[0]
       })
+    // update the dot
     svg
-      // First we need to enter in a group
       .selectAll('.dot')
       .data(groupSortData)
       .join('g')
       .attr('class', 'dot')
       .style('fill', (d) => color(d[0]))
-      // Second we need to enter in the 'values' part of this group
       .selectAll('.point')
       .data((d) => d[1])
       .join('circle')
@@ -211,13 +185,13 @@ function lineChart(data, filter) {
       .attr('cy', (d) => y(d.wordCount))
       .attr('r', 5)
       .attr('stroke', 'white')
-
+    // 調整上面的按鈕的顏色
     d3.selectAll('.bankButton')
       .data(groupSortData)
       .transition()
       .duration(1000)
       .style('background-color', (d) => hexToRgbA(color(d[0]), 0.5))
-
+    // 做滑動按鈕會有相對應的顏色
     d3.selectAll('.bankButton')
       .on('mouseover', function (event, d) {
         const value = this.dataset.value
@@ -283,11 +257,11 @@ function lineChart(data, filter) {
           .attr('stroke', (x) => hexToRgbA(color(x[0]), 0.5))
       })
   }
-  // Date Filter
+  // 刪除dateRange
   if (document.getElementById('dateRangeFilterSvg')) {
     document.getElementById('dateRangeFilterSvg').remove()
   }
-
+  // 日期滑桿
   let type = document.querySelector('input[name=type]:checked').value
   getDateRange(type)
     .then((res) => {
