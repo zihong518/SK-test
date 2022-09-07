@@ -14,7 +14,6 @@ import jieba.analyse
 from datetime import datetime
 import time
 from config import DB, DB, REVIEW_COLLECTION, ARTICLE_COLLECTION, DICT_COLLECTION
-import pymongo
 
 
 # 替換掉網址以及標點符號成空值
